@@ -60,22 +60,23 @@ endfunc
 " Convert each file name in the items List into <filename> (<dirname>) format.
 " Make sure the popup does't occupy the entire screen by reducing the width.
 func s:makeMenuName(items) abort
-  let maxwidth = popup_getpos(s:popup_winid).core_width
-  "let maxwidth = &columns - 30
+  let fmaxlen = popup_getpos(s:popup_winid).core_width * 4 / 10
+  let dmaxlen = popup_getpos(s:popup_winid).core_width - fmaxlen - 1
+  let fpartsz = fmaxlen / 2 - 2
+  let dpartsz = dmaxlen / 2 - 2
 
   for i in range(len(a:items))
     let filename = fnamemodify(a:items[i], ':t')
-    let flen = len(filename)
-    let dirname = fnamemodify(a:items[i], ':h')
-
-    if len(a:items[i]) > maxwidth && flen < maxwidth
-      " keep the full file name and reduce directory name length
-      " keep some characters at the beginning and end (equally).
-      " 6 spaces are used for "..." and " ()"
-      let dirsz = (maxwidth - flen - 6) / 2
-      let dirname = dirname[:dirsz] .. '...' .. dirname[-dirsz:]
+    if len(filename) > fmaxlen
+      let filename = filename[:fpartsz] .. '...' .. filename[-fpartsz:]
     endif
-    let a:items[i] = filename .. ' (' .. dirname .. ')'
+
+    let dirname = fnamemodify(a:items[i], ':h')
+    if len(dirname) > dmaxlen
+      let dirname = dirname[:dpartsz] .. '...' .. dirname[-dpartsz:]
+    endif
+
+    let a:items[i] = filename .. repeat(' ', fmaxlen - len(filename)) .. '║ ' .. dirname
   endfor
 endfunc
 
@@ -183,7 +184,7 @@ func bufselect#showMenu(pat) abort
   " Create the popup menu
   let popupAttr = {}
   let popupAttr.title = 'Buffers'
-  let popupAttr.minwidth = 60
+  let popupAttr.minwidth = 80
   let popupAttr.minheight = 10
   let popupAttr.maxheight = 20
   let popupAttr.maxwidth = 90
