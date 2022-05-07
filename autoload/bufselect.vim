@@ -102,6 +102,8 @@ func s:filterNames(id, key) abort
     let key_handled = 1
   elseif a:key == "\<Up>"
         \ || a:key == "\<Down>"
+        \ || a:key == "k"
+        \ || a:key == "j"
     " Use native Vim handling of these keys
     let key_handled = 0
   elseif a:key =~ '\f' || a:key == "\<Space>"
@@ -181,12 +183,12 @@ func bufselect#showMenu(pat) abort
   " Create the popup menu
   let popupAttr = {}
   let popupAttr.title = 'Buffers'
-  let popupAttr.minwidth = 30
+  let popupAttr.minwidth = 60
   let popupAttr.minheight = 10
-  let popupAttr.maxheight = 10
-  let popupAttr.maxwidth = 60
+  let popupAttr.maxheight = 20
+  let popupAttr.maxwidth = 90
   let popupAttr.fixed = 1
-  let popupAttr.close = "button"
+  " let popupAttr.close = "button"
   let popupAttr.filter = function('s:filterNames')
   let popupAttr.callback = function('s:editBuffer')
   let popupAttr.mapping = 1
